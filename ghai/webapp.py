@@ -98,6 +98,8 @@ def index():
     unread_items = Item.query.filter(Item.feed.has(user=request.user)).filter(Item.archived==False).order_by(Item.date.desc()).all()
     for item in unread_items:
         item_type, item.rendered_content = item.render(request.user)
+        if not item_type:
+            continue
         d[item_type].append(item)
     return render('index.html', events=d)
 
