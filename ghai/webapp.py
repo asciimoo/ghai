@@ -169,7 +169,7 @@ def authorized():
     session['user_id'] = user.id
 
     flash('Logged in as ' + me['name'])
-    return redirect(url_for('index'))
+    return redirect(url_for('fetch'))
 
 
 @app.route('/logout')
