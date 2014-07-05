@@ -21,6 +21,7 @@ cd ghai
 ./install.sh
 
 # edit your config
+# register github app here: https://github.com/settings/applications/new (set callback url to http://your.domain/callback)
 vi .ghairc
 
 # start the application
