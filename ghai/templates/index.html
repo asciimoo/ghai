@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="row">
+      {% for e in events %}
+        <div class="col-sm-3 item-list">
+            <div class="list-group">
+            <h3>{{ e }} ({{ events[e]|length }})</h3>
+            {% for s in events[e] %}
+                <div class="list-group-item small_text">{{ s.rendered_content|safe }}<br /><span class="small_text">{{ s.date }}</span></div>
+            {% endfor %}
+        {% if events[e]|length %}
+            <a href="{{ url_for('archive', ids=events[e]|map(attribute='id')|join(',')) }}" class="list-group-item btn btn-lg btn-outline" role="button">Archive</a>
+        {% endif %}
+    </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

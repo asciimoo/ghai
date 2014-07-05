@@ -1,0 +1,9 @@
+[github]
+github_app_id=
+github_app_secret=
+
+[app]
+secret=
+
+[database]
+connection=sqlite:///github.sqlite

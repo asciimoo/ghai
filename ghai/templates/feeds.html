@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="row">
+    <div class="col-sm-3">
+        <h3>Add feed</h3>
+        <div class="row">
+            <form class="form-horizontal" method="post" action="{{ url_for('add_feed') }}">
+                <div class="form-group">
+                    <label for="url" class="col-lg-2 control-label">url</label>
+                    <div class="col-lg-10">
+                        <input type="text" name="url" class="form-control" id="url" placeholder="url" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-12">
+                        <input type="submit" class="btn btn-primary pull-right" value="Submit" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-7 col-lg-offset-1">
+    <h3>Feeds ({{ feeds|length }})</h3>
+      <table class="table">
+          <thead>
+              <tr><th>id</th><th>Url</th></tr>
+          </thead>
+          <tbody>
+        {% for feed in feeds %}
+            <tr>
+                <td>{{ feed.id }}</td>
+                <td>{{ feed.url }}</td>
+            </tr>
+        {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
