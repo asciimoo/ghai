@@ -4,7 +4,7 @@ GHAI
 GitHub activity interface.
 
 
-demo: (here)[http://ghai.0x2a.tk/]
+demo: [here](http://ghai.0x2a.tk/)
 
 
 ### Install
