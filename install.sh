@@ -17,7 +17,7 @@ PYTHONPATH=`pwd` python ghai/models.py
 wget https://github.com/twbs/bootstrap/releases/download/v3.2.0/bootstrap-3.2.0-dist.zip -O bootstrap.zip \
 && unzip bootstrap.zip \
 && rm bootstrap.zip \
-&& mv bootstrap-3.2.0-dist/css/bootstrap.min.css ghai/static/ \
+&& mv bootstrap-3.2.0-dist/css/bootstrap.min.css ghai/static/css \
 && mv bootstrap-3.2.0-dist/js/bootstrap.min.js ghai/static/js \
 && rm -rf bootstrap-3.2.0-dist \
 
