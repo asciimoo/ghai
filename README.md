@@ -7,6 +7,13 @@ GitHub activity interface.
 demo: [here](http://ghai.0x2a.tk/)
 
 
+### Screenshots
+
+Main page
+
+![Main page](doc/images/main_interface.png)
+
+
 ### Install
 
 ```bash
