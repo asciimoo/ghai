@@ -22,15 +22,12 @@ if __name__ == '__main__':
     from os.path import realpath, dirname
     path.append(realpath(dirname(realpath(__file__))+'/../'))
 
-from flask import (
-    Flask, request, render_template, url_for,
-    redirect, session, flash
-)
-
-from rauth import OAuth2Service
-from json import dumps
-from functools import wraps
 from collections import OrderedDict
+from functools import wraps
+from json import dumps
+from flask import (
+    Flask, request, render_template, url_for, redirect, session, flash)
+from rauth import OAuth2Service
 from ghai.models import User, Item, Feed, db
 from ghai import cfg
 
@@ -55,6 +52,9 @@ app.config.from_object(__name__)
 app.debug = True
 
 
+TYPES = ('personal', 'star', 'repo', 'issue')
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -68,8 +68,6 @@ def render(template_name, **kwargs):
 
     # override url_for function in templates
     kwargs['user'] = request.user
-
-
     return render_template(template_name, **kwargs)
 
 
@@ -84,7 +82,6 @@ def before_request():
             else:
                 del session['user_id']
 
-types = ('personal', 'star', 'repo', 'issue')
 
 
 # views
@@ -94,8 +91,10 @@ def index():
     if not request.user:
         return redirect(url_for('login'))
 
-    d = OrderedDict({x:[] for x in types})
-    unread_items = Item.query.filter(Item.feed.has(user=request.user)).filter(Item.archived==False).order_by(Item.date.desc()).all()
+    d = OrderedDict({x: [] for x in TYPES})
+    unread_items = Item.query.filter(
+        Item.feed.has(user=request.user), Item.archived==False)\
+        .order_by(Item.date.desc()).all()
     for item in unread_items:
         item_type, item.rendered_content = item.render(request.user)
         if not item_type:
@@ -110,7 +109,7 @@ def query():
     q = request.args.get('q', '')
     data = None
     if q:
-        auth = github.get_session(token = session['token'])
+        auth = github.get_session(token=session['token'])
         resp = auth.get(q)
         if resp.status_code == 200:
             data = resp.json()
@@ -127,7 +126,10 @@ def archive(ids):
         # TODO error handling
         return redirect(url_for('index'))
 
-    for i in Item.query.filter(Item.feed.has(user=request.user)).filter(Item.id.in_(ids)).filter(Item.archived==False):
+    items = Item.query.filter(
+        Item.feed.has(user=request.user), Item.id.in_(ids),
+        Item.archived==False)
+    for i in items:
         i.archived = True
     db.commit()
     return redirect(url_for('index'))
@@ -147,28 +149,26 @@ def login():
 @app.route('/callback')
 def authorized():
     # check to make sure the user authorized the request
-    if not 'code' in request.args:
+    if 'code' not in request.args:
         flash('You did not authorize the request')
         return redirect(url_for('index'))
 
     # make a request for the access token credentials using code
     redirect_uri = url_for('authorized', _external=True)
 
-    data = dict(code=request.args['code'],
-        redirect_uri=redirect_uri,
+    data = dict(
+        code=request.args['code'], redirect_uri=redirect_uri,
         scope='public_repo')
 
     auth = github.get_auth_session(data=data)
 
     # the "me" response
     me = auth.get('/user').json()
-
     user = User.get_or_create(me['login'], me['name'])
-
     session['token'] = auth.access_token
     session['user_id'] = user.id
-
     flash('Logged in as ' + me['name'])
+
     return redirect(url_for('fetch'))
 
 
@@ -210,26 +210,21 @@ def add_feed():
     return redirect(url_for('feeds'))
 
 
-
 @app.route('/fetch')
 @login_required
 def fetch():
     if not request.user or not session.get('token'):
         return redirect(url_for('login'))
-    auth = github.get_session(token = session['token'])
+    auth = github.get_session(token=session['token'])
     for feed in request.user.feeds:
         resp = auth.get(feed.url).json()
         for resp_item in resp:
             Item.parse_and_add(resp_item, feed, request.user)
     return redirect(url_for('index'))
 
-def run():
 
-    app.run(
-        debug=app.debug,
-        use_debugger=app.debug,
-        port=4444
-    )
+def run():
+    app.run(debug=app.debug, use_debugger=app.debug, port=4444)
 
 
 if __name__ == "__main__":

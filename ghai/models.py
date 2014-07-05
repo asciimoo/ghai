@@ -1,10 +1,14 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean
+from datetime import datetime
+import json
+from sqlalchemy import (
+    create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean)
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
-from ghai import cfg
-from datetime import datetime
 from sqlalchemy.types import TypeDecorator, VARCHAR
-import json
+from ghai import cfg
+
+
+REF_MAP = {'repository': 'repo'}
 
 
 class JSONEncodedDict(TypeDecorator):
@@ -31,17 +35,19 @@ class JSONEncodedDict(TypeDecorator):
 
 
 engine = create_engine(cfg.get('database', 'connection'))
-db = scoped_session(sessionmaker(autocommit=False,
-                                 autoflush=False,
-                                 bind=engine))
+db = scoped_session(
+    sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 Base = declarative_base()
 Base.metadata.bind = engine
 Base.query = db.query_property()
 
+
 # Bases
 class User(Base):
+
     __tablename__ = 'users'
+
     id = Column(Integer, primary_key=True)
     login = Column(String(80), unique=True)
     name = Column(String(120))
@@ -56,26 +62,28 @@ class User(Base):
     @staticmethod
     def get_or_create(login, name, feeds=None):
         user = User.query.filter_by(login=login).first()
-        if user is None:
-            if feeds == None:
-                feeds = []
-            feeds.append('/users/{0}/received_events'.format(login))
-            user = User(login, name)
-            db.add(user)
-            for feed in feeds:
-                user_feed = Feed(feed, user)
-                db.add(user_feed)
-            db.commit()
+        if user:
+            return user
+
+        feeds = feeds or []
+        feeds.append('/users/{0}/received_events'.format(login))
+        user = User(login, name)
+        db.add(user)
+        for feed in feeds:
+            user_feed = Feed(feed, user)
+            db.add(user_feed)
+        db.commit()
         return user
 
 
 class Feed(Base):
+
     __tablename__ = 'feeds'
+
     id = Column(Integer, primary_key=True)
     url = Column(String(120))
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship('User',
-                           backref=backref('feeds', lazy='dynamic'))
+    user = relationship('User', backref=backref('feeds', lazy='dynamic'))
 
     def __init__(self, url, user):
         self.url = url
@@ -85,11 +93,10 @@ class Feed(Base):
         return '<Feed %r>' % self.url
 
 
-ref_map = {'repository': 'repo'}
-
-
 class Item(Base):
+
     __tablename__ = 'items'
+
     id = Column(Integer, primary_key=True)
     content = Column(JSONEncodedDict(1023))
     feed_id = Column(Integer, ForeignKey('feeds.id'))
@@ -117,7 +124,7 @@ class Item(Base):
             t = 'star'
             act = 'starred'
         elif resp_item['type'] == 'CreateEvent':
-            t = ref_map.get(resp_item['payload']['ref_type'])
+            t = REF_MAP.get(resp_item['payload']['ref_type'])
             act = 'created {0}'.format(resp_item['payload']['ref_type'])
         elif resp_item['type'] == 'ForkEvent':
             t = 'repo'
