@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # copy and edit config
-cp ghairc_sample .ghairc
+cp ghai/app.cfg.sample ghai/app.cfg
 
 # create and activate virtualenv
 virtualenv env
@@ -9,9 +9,6 @@ source env/bin/activate
 
 # install dependencies
 pip install -r requirements.txt
-
-# initialize the model
-PYTHONPATH=`pwd` python ghai/models.py
 
 # download bootstrap
 wget https://github.com/twbs/bootstrap/releases/download/v3.2.0/bootstrap-3.2.0-dist.zip -O bootstrap.zip \
@@ -31,3 +28,5 @@ wget https://fortawesome.github.io/Font-Awesome/assets/font-awesome-4.1.0.zip -O
 && mv font-awesome-4.1.0/fonts/* ghai/static/fonts \
 && mv font-awesome-4.1.0/css/font-awesome.min.css ghai/static/css \
 && rm -r font-awesome-4.1.0
+
+python ghai/webapp.py

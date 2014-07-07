@@ -5,10 +5,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import TypeDecorator, VARCHAR
-from ghai import cfg
+from flask.ext.sqlalchemy import SQLAlchemy
 
 
 REF_MAP = {'repository': 'repo'}
+db = SQLAlchemy()
 
 
 class JSONEncodedDict(TypeDecorator):
@@ -34,17 +35,8 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
-engine = create_engine(cfg.get('database', 'connection'))
-db = scoped_session(
-    sessionmaker(autocommit=False, autoflush=False, bind=engine))
-
-Base = declarative_base()
-Base.metadata.bind = engine
-Base.query = db.query_property()
-
-
 # Bases
-class User(Base):
+class User(db.Model):
 
     __tablename__ = 'users'
 
@@ -76,7 +68,7 @@ class User(Base):
         return user
 
 
-class Feed(Base):
+class Feed(db.Model):
 
     __tablename__ = 'feeds'
 
@@ -93,7 +85,7 @@ class Feed(Base):
         return '<Feed %r>' % self.url
 
 
-class Item(Base):
+class Item(db.Model):
 
     __tablename__ = 'items'
 
@@ -171,7 +163,3 @@ class Item(Base):
         db.add(item)
         db.commit()
         return True
-
-
-if __name__ == '__main__':
-    Base.metadata.create_all(bind=engine)
