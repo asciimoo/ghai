@@ -128,6 +128,11 @@ class Item(db.Model):
             # TODO
             t = 'repo'
             act = '{0} pull request'.format(resp_item['payload']['action'])
+        elif resp_item['type'] == 'DeleteEvent':
+            # TODO
+            t = 'repo'
+            act = 'deleted {0} {1} at'.format(resp_item['payload']['ref_type'],
+                                            resp_item['payload']['ref'])
         elif resp_item['type'] == 'IssuesEvent':
             t = 'issue'
             act = '{0} issue (<a href="{1}">#{2}</a>)'.format(resp_item['payload']['action'], resp_item['payload']['issue']['url'], resp_item['payload']['issue']['number'])
