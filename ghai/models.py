@@ -1,9 +1,8 @@
 from datetime import datetime
 import json
 from sqlalchemy import (
-    create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean)
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
+    Column, Integer, String, ForeignKey, DateTime, Boolean)
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.types import TypeDecorator, VARCHAR
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -60,11 +59,11 @@ class User(db.Model):
         feeds = feeds or []
         feeds.append('/users/{0}/received_events'.format(login))
         user = User(login, name)
-        db.add(user)
+        db.session.add(user)
         for feed in feeds:
             user_feed = Feed(feed, user)
-            db.add(user_feed)
-        db.commit()
+            db.session.add(user_feed)
+        db.session.commit()
         return user
 
 
@@ -160,6 +159,6 @@ class Item(db.Model):
         item = Item(feed, resp_item)
         item.date = datetime.strptime(resp_item['created_at'], "%Y-%m-%dT%H:%M:%SZ")
         item.id = resp_item['id']
-        db.add(item)
-        db.commit()
+        db.session.add(item)
+        db.session.commit()
         return True

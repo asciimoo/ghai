@@ -125,7 +125,7 @@ def archive(ids):
         Item.archived==False)
     for i in items:
         i.archived = True
-    db.commit()
+    db.session.commit()
     return redirect(url_for('index'))
 
 
@@ -199,8 +199,8 @@ def add_feed():
     if not request.form.get('url'):
         return redirect(url_for('index'))
     feed = Feed(request.form['url'], request.user)
-    db.add(feed)
-    db.commit()
+    db.session.add(feed)
+    db.session.commit()
     return redirect(url_for('feeds'))
 
 
