@@ -28,31 +28,25 @@ from json import dumps
 from flask import (
     Flask, request, render_template, url_for, redirect, session, flash)
 from rauth import OAuth2Service
-from ghai.models import User, Item, Feed, db
-from ghai import cfg
+from models import User, Item, Feed, db
 
-# Flask config
 
-# Read secret keys from env vars
-# # See: http://12factor.net/config
-github_app_id = cfg.get('github', 'github_app_id')
-github_app_secret = cfg.get('github', 'github_app_secret')
+TYPES = ('personal', 'star', 'repo', 'issue')
+
+
+app = Flask(__name__)
+app.config.from_pyfile('app.cfg')
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 github = OAuth2Service(
-    client_id=github_app_id,
-    client_secret=github_app_secret,
+    client_id=app.config['GITHUB_APP_ID'],
+    client_secret=app.config['GITHUB_APP_SECRET'],
     name='github',
     authorize_url='https://github.com/login/oauth/authorize',
     access_token_url='https://github.com/login/oauth/access_token',
     base_url='https://api.github.com/')
-
-app = Flask(__name__)
-app.secret_key = cfg.get('app', 'secret')
-app.config.from_object(__name__)
-app.debug = True
-
-
-TYPES = ('personal', 'star', 'repo', 'issue')
 
 
 def login_required(f):

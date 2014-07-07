@@ -1,0 +1,5 @@
+GITHUB_APP_ID = ''
+GITHUB_APP_SECRET = ''
+SECRET_KEY = ''
+SQLALCHEMY_DATABASE_URI = 'sqlite:///github.sqlite'
+DEBUG = True

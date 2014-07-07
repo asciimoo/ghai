@@ -1,4 +1,5 @@
 flask
 sqlalchemy
+Flask-SQLAlchemy==1.0
 requests
 rauth

@@ -1,2 +1,14 @@
 github.sqlite
 .ghairc
+ghai/app.cfg
+env
+*.pyc
+ghai/static/css/bootstrap.min.css
+ghai/static/css/font-awesome.min.css
+ghai/static/fonts/FontAwesome.otf
+ghai/static/fonts/fontawesome-webfont.eot
+ghai/static/fonts/fontawesome-webfont.svg
+ghai/static/fonts/fontawesome-webfont.ttf
+ghai/static/fonts/fontawesome-webfont.woff
+ghai/static/js/bootstrap.min.js
+ghai/static/js/jquery.min.js
