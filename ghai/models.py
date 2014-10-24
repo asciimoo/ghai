@@ -152,7 +152,10 @@ class Item(db.Model):
             return False, False
         if repo_user == request_user.login:
             t = 'personal'
-        return t, '<a href="https://github.com/{0}">{0}</a> {2} <a href="https://github.com/{1}">{1}</a>.'.format(user, repo, act)
+        s = '<a href="https://github.com/{0}">{0}</a> {2} <a href="https://github.com/{1}">{1}</a>.'.format(user, repo, act)
+        if resp_item['type'] == 'ForkEvent':
+            s += ' to <a href="{0}">{1}/{2}</a>'.format(resp_item['payload']['forkee']['svn_url'], user, resp_item['payload']['forkee']['name'])
+        return t, s
 
     @staticmethod
     def parse_and_add(resp_item, feed, request_user):
