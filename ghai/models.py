@@ -135,13 +135,13 @@ class Item(db.Model):
                                             resp_item['payload']['ref'])
         elif resp_item['type'] == 'IssuesEvent':
             t = 'issue'
-            act = '{0} issue (<a href="{1}">#{2}</a>)'.format(resp_item['payload']['action'], resp_item['payload']['issue']['url'], resp_item['payload']['issue']['number'])
+            act = '{0} issue (<a href="{1}">#{2}</a>)'.format(resp_item['payload']['action'], resp_item['payload']['issue']['html_url'], resp_item['payload']['issue']['number'])
         elif resp_item['type'] == 'IssueCommentEvent':
             t = 'issue'
-            act = 'commented issue (<a href="{0}">#{1}</a>)'.format(resp_item['payload']['issue']['url'], resp_item['payload']['issue']['number'])
+            act = 'commented issue (<a href="{0}">#{1}</a>)'.format(resp_item['payload']['issue']['html_url'], resp_item['payload']['issue']['number'])
         elif resp_item['type'] == 'CommitCommentEvent':
             t = 'issue'
-            act = 'commented on commit <a href="{0}">{1}</a>'.format(resp_item['payload']['comment']['url'], resp_item['payload']['comment']['commit_id'])
+            act = 'commented on commit <a href="{0}">{1}</a>'.format(resp_item['payload']['comment']['html_url'], resp_item['payload']['comment']['commit_id'])
         elif resp_item['type'] == 'GollumEvent':
             t = 'repo'
             # TODO multiple pages
